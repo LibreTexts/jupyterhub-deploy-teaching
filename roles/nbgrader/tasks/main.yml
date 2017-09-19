@@ -1,11 +1,10 @@
 ---
 
-- name: pip install nbgrader
-  pip: name={{item}} state=present executable=pip
+- name: conda install nbgrader
+  conda: name={{item}} state=present
   become: true
   with_items:
-    # - nbgrader
-    - git+https://github.com/jupyter/nbgrader.git@master#egg=nbgrader
+    - nbgrader
 
 - name: make sure /var/log/nbgrader exists
   file: path={{nbgrader_log_dir}}/ state={{item}} owner=root group=root mode=0755
@@ -21,46 +20,51 @@
     - directory
     - touch
 
-- name: install the nbgrader nbextensions
-  command: jupyter nbextension {{item}} --sys-prefix --py nbgrader
+- name: make sure /srv/nbgrader/exchange/<course> exists
+  file: path={{nbgrader_exchange_dir}}/{{item[0].course_id}} state={{item[1]}} owner=root group=root mode=0733
   become: true
-  with_items:
-    - install
-    - enable
-
-- name: install the nbgrader serverextension
-  command: jupyter serverextension enable --sys-prefix --py nbgrader
-  become: true
-
-- name: stat home directories of instructors
-  stat: path={{home_dir}}/{{item.owner}}
-  with_items:
+  with_nested:
     - "{{nbgrader_courses}}"
-  register: home_dirs_exists
+    - ['directory', 'touch']
 
-- name: fail if home directories of instructors don't exist
-  fail: msg="Instructors' home directory doesn't exist, create them first!"
-  when: item.stat.exists == False
-  with_items:
-    - "{{home_dirs_exists.results}}"
+- name: create admin group
+  group: name=admins
 
-- name: make sure base exists
-  file: path={{home_dir}}/{{item[0].owner}}/nbgrader/{{item[0].course_id}}/ state={{item[1]}} owner={{item[0].owner}} group={{item[0].owner}} mode=0700
+# if deploying to a testing server, set a trivial password for PAM auth
+# the password is `This is my Password`
+- name: create instructor user accounts (with password)
+  user: name={{item}} groups=admins append=yes password={{'pass'|password_hash('sha512')}}
+  with_items: '{{jupyterhub_admin_users}}'
+  when: inventory_hostname == "testing"
+
+# if deploying to a real server, don't give the admin accounts passwords
+# assume they can SSH in with public key auth or just use root
+- name: create instructor user accounts (without password)
+  user: name={{item}} groups=admins append=yes
+  with_items: '{{jupyterhub_admin_users}}'
+  when: inventory_hostname != "testing"
+
+# create an account for nbgrader
+- name: create nbgrader account
+  user: name=nbgrader
+
+# each course lives in /home/nbgrader/courses/<course_id>
+- name: make sure courses directory exists
+  file: path={{home_dir}}/nbgrader/courses/{{item[0].course_id}}/ state={{item[1]}} owner=nbgrader group=nbgrader mode=0700
   become: true
   with_nested:
     - "{{nbgrader_courses}}"
     - ['directory', 'touch']
 
 - name: make sure subdirectories exist
-  file: path={{home_dir}}/{{item[0].owner}}/nbgrader/{{item[0].course_id}}/{{item[1]}}/ state=directory owner={{item[0].owner}} group={{item[0].owner}} mode=0700
+  file: path={{home_dir}}/nbgrader/courses/{{item[0].course_id}}/{{item[1]}}/ state=directory owner=nbgrader group=nbgrader mode=0700
   become: true
   with_nested:
     - "{{nbgrader_courses}}"
     - ['source', 'release', 'feedback', 'autograded', 'submitted']
 
 - name: install nbgrader config file
-  template: src=nbgrader_config.py.j2 dest={{home_dir}}/{{item.owner}}/nbgrader/{{item.course_id}}/nbgrader_config.py owner={{item.owner}} group={{item.owner}} mode=700
+  template: src=nbgrader_config.py.j2 dest={{home_dir}}/nbgrader/courses/{{item.course_id}}/nbgrader_config.py owner=nbgrader group=nbgrader mode=700
   become: true
   with_items:
     - "{{nbgrader_courses}}"
-

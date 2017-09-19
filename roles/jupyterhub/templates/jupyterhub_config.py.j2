@@ -8,6 +8,7 @@ c.JupyterHub.cookie_secret_file = u'{{ jupyterhub_srv_dir }}/cookie_secret'
 c.JupyterHub.db_url = u'{{ jupyterhub_srv_dir }}/jupyterhub.sqlite'
 c.JupyterHub.proxy_auth_token = u'{{proxy_auth_token}}'
 c.JupyterHub.confirm_no_ssl = True
+
 {% if not cleanup_on_shutdown %}
 c.JupyterHub.cleanup_proxy = False
 c.JupyterHub.cleanup_servers = False
@@ -16,7 +17,7 @@ c.JupyterHub.cleanup_servers = False
 c.JupyterHub.load_groups = {
 {% if use_nbgrader -%}
 {%- for course in nbgrader_courses -%}
-    'formgrade-{{course.course_id}}': [
+    '{{course.course_id}}': [
 {%- for grader in course.graders -%}
         '{{grader}}',
 {%- endfor -%}
@@ -26,12 +27,15 @@ c.JupyterHub.load_groups = {
 }
 
 {% if use_oauth %}
-c.JupyterHub.authenticator_class = u'oauthenticator.LocalGitHubOAuthenticator'
-c.LocalGitHubOAuthenticator.create_system_users = True
-c.Authenticator.add_user_cmd =  ['adduser', '-q', '--home', '{{home_dir}}/USERNAME', '--gecos', '""', '--disabled-password']
-c.GitHubOAuthenticator.oauth_callback_url = u'{{ oauth_callback_url }}'
-c.GitHubOAuthenticator.client_id = u'{{ oauth_client_id }}'
-c.GitHubOAuthenticator.client_secret = u'{{ oauth_client_secret }}'
+c.JupyterHub.authenticator_class = u'oauthenticator.LocalGoogleOAuthenticator'
+c.LocalGoogleOAuthenticator.create_system_users = True
+c.Authenticator.add_user_cmd =  ['adduser', '-q', '--home', '{{home_dir}}/USERNAME',
+                                 '--gecos', '""', '--disabled-password']
+c.GoogleOAuthenticator.hosted_domain = '{{ oauth_hosted_domain }}'
+c.GoogleOAuthenticator.login_service = '{{ oauth_login_service }}'
+c.GoogleOAuthenticator.oauth_callback_url = u'{{ oauth_callback_url }}'
+c.GoogleOAuthenticator.client_id = u'{{ oauth_client_id }}'
+c.GoogleOAuthenticator.client_secret = u'{{ oauth_client_secret }}'
 {% endif %}
 
 {% if jupyterhub_admin_users|length %}
@@ -58,12 +62,11 @@ c.JupyterHub.services = [
 {% if use_nbgrader %}
 {%- for course in nbgrader_courses %}
     {
-        'name': 'formgrade-{{course.course_id}}',
+        'name': '{{course.course_id}}',
+        'url': 'http://{{ ansible_default_ipv4.address }}:{{course.port}}',
         'admin': True,
-        'url': 'http://127.0.0.1:{{course.port}}',
-#       'user': '{{course.owner}}',
-        'cwd': '{{home_dir}}/{{course.owner}}/nbgrader/{{course.course_id}}',
-        'command': ['nbgrader', 'formgrade']
+        'cwd': '{{home_dir}}/nbgrader/courses/{{course.course_id}}',
+        'command': ['jupyterhub-singleuser', '--group={{course.course_id}}', '--allow-root']
     },
 {% endfor -%}
 {% endif %}

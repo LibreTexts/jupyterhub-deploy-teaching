@@ -112,3 +112,33 @@ The logs for nbgrader are in ``/var/log/nbgrader``.
 ### Starting, stopping, and restarting the Hub
 To manage the jupyterhub and nbgrader services by SSH to the server
 and run: ``supervisorctl jupyterhub [start|stop|restart]``
+
+## Testing
+
+A [Vagrant](https://www.vagrantup.com/) environment is available for testing
+in case you would like to experiment with the deployment. Everything above and
+in the documentation holds, except for the following.
+
+### Deploying
+
+The command to run the test environment is ``vagrant up``. If you make changes
+and the vagrant box is already initialized/running, you can use ``vagrant
+provision``. Once the environment is running, you can determine the IP address
+to access by connecting via SSH and running ``ifconfig``:
+
+```
+vagrant ssh
+ifconfig
+```
+
+The output following ``inet addr:`` lists the IP address you can use to access
+the JupyterHub server through your browser.
+
+If the Ansible provisioning fails with an error like "Failed to connect to host
+via ssh" you can check the port with ``vagrant ssh-config`` and make sure the
+``ansible_ssh_port`` setting in the ``hosts`` flie matches.
+
+### Authentication
+
+OAuth is not enabled for the testing environment. Instead, PAM authentication
+is used and the instructor accounts are all given the password ``pass``.

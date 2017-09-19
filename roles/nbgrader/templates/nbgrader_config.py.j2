@@ -2,9 +2,6 @@
 # Supervisord is responsible for logging.
 c = get_config()
 
-c.NbGrader.course_id = '{{item.course_id}}'
-
-c.FormgradeApp.authenticator_class = u'nbgrader.auth.hubauth.HubAuth'
-c.FormgradeApp.ip = '127.0.0.1'
-c.FormgradeApp.port = {{item.port}}
-c.HubAuth.grader_group = u'formgrade-{{item.course_id}}'
+c.Exchange.course_id = u'{{item.course_id}}'
+c.Exchange.path_includes_course = True
+c.Exchange.timezone = u'{{nbgrader_timezone}}'

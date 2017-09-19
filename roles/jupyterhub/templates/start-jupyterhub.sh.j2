@@ -1,4 +1,4 @@
 #!/bin/bash -l
 # {{ ansible_managed }}
 env
-exec jupyterhub $@
+exec jupyterhub --config=/etc/jupyterhub/jupyterhub_config.py $@

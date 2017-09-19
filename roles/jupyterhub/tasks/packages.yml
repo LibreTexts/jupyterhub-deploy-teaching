@@ -7,9 +7,14 @@
     - configurable-http-proxy
     - sqlalchemy
 
-- name: install jupyterhub via pip
-  pip: name={{item}} state=present editable=false executable=pip
+- name: install oauthenticator via pip
+  pip: name={{item}} state=present executable=pip
   become: true
   with_items:
-    - jupyterhub==0.7
-    - oauthenticator==0.5
+    - oauthenticator
+
+- name: install jupyterhub pre-release (0.8.0bx) via pip
+  pip: name={{item}} state=present editable=false executable=pip extra_args=--pre
+  become: true
+  with_items:
+    - jupyterhub==0.8.0b5

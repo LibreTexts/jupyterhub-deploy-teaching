@@ -1,7 +1,7 @@
-miniconda_version: 4.2.12
+miniconda_version: 4.3.21
 conda_installer: Miniconda3-{{miniconda_version}}-Linux-x86_64.sh
 conda_prefix: /opt/conda
-conda_checksum: "md5:d0c7c71cc5659e54ab51f2005a8d96f3"
+conda_checksum: "md5:c1c15d3baba15bf50293ae963abef853"
 conda_config:
   channels:
     - conda-forge
