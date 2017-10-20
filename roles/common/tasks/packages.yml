@@ -28,6 +28,7 @@
     - git
     - texlive-full
     - pandoc
+    - ffmpeg
 
 - name: install user applications
   apt: pkg={{item}} state=present
