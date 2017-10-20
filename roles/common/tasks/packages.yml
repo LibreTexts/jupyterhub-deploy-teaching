@@ -26,6 +26,8 @@
   with_items:
     - gfortran
     - git
+    - texlive-full
+    - pandoc
 
 - name: install user applications
   apt: pkg={{item}} state=present
