@@ -9,7 +9,6 @@
     - ipyparallel
     - ipykernel
     - nbconvert
-    - pandoc
     - ipywidgets
 
 - name: install python3 kernelspec

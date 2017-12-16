@@ -1,20 +1,14 @@
 ---
 
-- name: install jupyterhub dependencies via conda
-  conda: name={{item}} state=present
-  become: true
-  with_items:
-    - configurable-http-proxy
-    - sqlalchemy
-
 - name: install oauthenticator via pip
   pip: name={{item}} state=present executable=pip
   become: true
   with_items:
     - oauthenticator
+    - jupyterhub-systemdspawner
 
-- name: install jupyterhub pre-release (0.8.0bx) via pip
-  pip: name={{item}} state=present editable=false executable=pip extra_args=--pre
+- name: install jupyterhub
+  conda: name={{item}} state=present
   become: true
   with_items:
-    - jupyterhub==0.8.0b5
+    - jupyterhub

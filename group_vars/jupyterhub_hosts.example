@@ -1,0 +1,206 @@
+---
+
+home_dir: /home
+
+# Users with administrative privileges.
+jupyterhub_admin_users:
+  - jasonmoore
+  - krlyons
+  - bwmargolis
+
+# Whitelist of jupyterhub users.
+jupyterhub_users:
+  - jasonmoore
+  - krlyons
+  - bwmargolis
+  - mhubbard
+
+
+# Secret token for proxy access. Create token using something like
+# `openssl rand -hex 32` and enter between quotation marks below.
+# TODO
+proxy_auth_token: 'FILL IN HERE'
+
+# Cleanup single user servers and the proxy on jupyterhub shutdown. Setting
+# this to false, will allow jupyterhub to be restarted while leaving the proxy
+# and single user servers running.
+cleanup_on_shutdown: false
+
+# ------------------------------------------------------------------------------
+# Packages
+# ------------------------------------------------------------------------------
+
+# List the apt packages you want installed. Everything necessary to run
+# JupyterHub will be installed for you; this is for extra stuff.
+apt_packages:
+  - git
+  - gfortran
+  - htop
+  - vim
+  - tree
+  - texlive-full
+  - pandoc
+  - ffmpeg
+  - aptitude
+  - screen
+
+# Add or remove packages here for different package managers here. The package
+# listed here are on-top of the base installation of jupyter, ipython and the
+# IPython kernel.
+
+conda_packages:
+  - numpy
+  - scipy
+  - matplotlib
+  - cython
+  - pandas
+  - sympy
+
+pip_packages:
+
+
+# specify version and grab the checksum for miniconda3-x.x.x-Linux-x86_64.sh
+# https://repo.continuum.io/miniconda/
+miniconda_version: 4.3.30
+conda_checksum: "md5:bd1655b4b313f7b2a1f2e15b7b925d03"
+
+# YAML just like the conda config
+# should at least have conda-forge and defaults channels
+conda_config:
+  channels:
+    - conda-forge
+    - defaults
+  show_channel_urls: yes
+
+# ------------------------------------------------------------------------------
+# nbgrader
+# ------------------------------------------------------------------------------
+
+# nbgrader is a system for assigning, collecting and grading notebook based
+# homework assignments. For more details see:
+# http://nbgrader.readthedocs.io/en/stable/
+
+# Set to `true` to enable.
+use_nbgrader: true
+
+nbgrader_timezone: 'PST'
+
+# The list of nbgrader courses. Each must have a unique `course_id` and `port`.
+# IMPORTANT: These user accounts must be created before the ansible scripts
+# are run. If OAuth is used, passwords must be disabled for those users.
+nbgrader_courses:
+  - {
+      course_id: "eng122",
+      owner: "nbgrader",
+      graders: ["jasonmoore", "krlyons", "bwmargolis"],
+      port: 5000
+    }
+  - {
+      course_id: "mae223",
+      owner: "nbgrader",
+      graders: ["jasonmoore"],
+      port: 5001
+    }
+
+# ------------------------------------------------------------------------------
+# cull_idle_servers
+# ------------------------------------------------------------------------------
+
+# Set to `true` to enable.
+use_cull_idle_servers: true
+
+# The interval (in seconds) for checking for idle servers to cull.
+cull_every: 600
+
+# The idle timeout (in seconds). Cull server if idle for longer than this.
+cull_timeout: 7200
+
+
+# ------------------------------------------------------------------------------
+# SystemdSpawner options
+# ------------------------------------------------------------------------------
+
+spawner_mem_limit: '2G'
+spawner_cpu_limit: 1
+
+# ------------------------------------------------------------------------------
+# OAuth
+# ------------------------------------------------------------------------------
+
+# The default authentication will use PAM, which is the standard UNIX password
+# standard. In the default configuration UNIX usernames and passwords will be
+# used for JupyterHub. Enabling OAuth through an OAuth provider (such as GitHub)
+# will enable users to log in using their username and passwords from the OAuth
+# provider. In this case, new users can be added using the JupyterHub Admin
+# page, and the users' home directories will be automatically created.
+
+# Set to `true` to enable.
+use_oauth: false
+
+# The OAuth callback URL.
+oauth_callback_url: 'https://bicycle.ucdavis.edu/hub/oauth_callback'
+
+# The OAuth client ID.
+# TODO
+oauth_client_id: 'FILL IN CLIENT ID HERE'
+
+# The OAuth client secret.
+# TODO
+oauth_client_secret: 'FILL IN CLIENT SECRET HERE'
+
+oauth_hosted_domain: 'ucdavis.edu'
+oauth_login_service: 'UC Davis'
+
+
+#####################################################
+# EVERYTHING BELOW HERE SHOULDN'T NEED CHANGING
+#####################################################
+
+# These are global variables that are used across roles.
+# NOTE: You shouldn't have to change these, to customize this deployment
+#       for individual hosts, create and edit files in the host_vars folder.
+
+# ---------------------------------------------------
+# Ansible
+# ---------------------------------------------------
+
+# Path of the Python 3 interpreter on the remote server
+ansible_python_interpreter: '/usr/bin/python3'
+
+# ---------------------------------------------------
+# JupyterHub config directories
+# ---------------------------------------------------
+
+jupyterhub_srv_dir: "/srv/jupyterhub"
+jupyterhub_config_dir: "/etc/jupyterhub"
+jupyterhub_log_dir: "/var/log/jupyterhub"
+
+# ---------------------------------------------------
+# Jupyter config directories
+# ---------------------------------------------------
+
+jupyter_config_dir: "/etc/jupyter"
+jupyter_share_dir: "/usr/local/share/jupyter"
+jupyter_templates_dir: "{{jupyter_config_dir}}/templates"
+
+# ---------------------------------------------------
+# IPython config directory
+# ---------------------------------------------------
+
+ipython_config_dir: "/etc/ipython"
+
+# ---------------------------------------------------
+# Nginx configuration of SSL
+# ---------------------------------------------------
+
+# For externally provided SSL cert
+ssl_path: "/etc/nginx/ssl"
+ssl_key_path: "{{ssl_path}}/ssl.key"
+ssl_cert_path: "{{ssl_path}}/ssl.crt"
+
+# ---------------------------------------------------
+# Nbgrader config directories
+# ---------------------------------------------------
+
+nbgrader_log_dir: "/var/log/nbgrader"
+nbgrader_exchange_dir: "/srv/nbgrader/exchange"

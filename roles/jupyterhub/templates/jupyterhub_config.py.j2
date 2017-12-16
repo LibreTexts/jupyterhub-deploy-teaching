@@ -2,29 +2,22 @@
 # Configuration file for jupyterhub.
 
 c = get_config()
-c.JupyterHub.ip = u'{{ ansible_default_ipv4.address }}'
+
+# basic configuration
+c.JupyterHub.ip = u'127.0.0.1'
 c.JupyterHub.port = 8000
+c.JupyterHub.config_file = u'{{ jupyterhub_config_dir }}/jupyterhub_config.py'
 c.JupyterHub.cookie_secret_file = u'{{ jupyterhub_srv_dir }}/cookie_secret'
 c.JupyterHub.db_url = u'{{ jupyterhub_srv_dir }}/jupyterhub.sqlite'
 c.JupyterHub.proxy_auth_token = u'{{proxy_auth_token}}'
 c.JupyterHub.confirm_no_ssl = True
+
 
 {% if not cleanup_on_shutdown %}
 c.JupyterHub.cleanup_proxy = False
 c.JupyterHub.cleanup_servers = False
 {% endif %}
 
-c.JupyterHub.load_groups = {
-{% if use_nbgrader -%}
-{%- for course in nbgrader_courses -%}
-    '{{course.course_id}}': [
-{%- for grader in course.graders -%}
-        '{{grader}}',
-{%- endfor -%}
-    ],
-{% endfor -%}
-{%- endif %}
-}
 
 {% if use_oauth %}
 c.JupyterHub.authenticator_class = u'oauthenticator.LocalGoogleOAuthenticator'
@@ -38,6 +31,7 @@ c.GoogleOAuthenticator.client_id = u'{{ oauth_client_id }}'
 c.GoogleOAuthenticator.client_secret = u'{{ oauth_client_secret }}'
 {% endif %}
 
+# administrative users
 {% if jupyterhub_admin_users|length %}
 c.Authenticator.admin_users = {
 {%- for user in jupyterhub_admin_users[:-1] -%}
@@ -48,6 +42,7 @@ c.Authenticator.admin_users = {
 c.Authenticator.admin_users = set()
 {% endif %}
 
+# non-administrative users
 {% if jupyterhub_users|length %}
 c.Authenticator.whitelist = {
 {%- for user in jupyterhub_users[:-1] -%}
@@ -58,12 +53,28 @@ c.Authenticator.whitelist = {
 c.Authenticator.whitelist = set()
 {% endif %}
 
+# groups for course administration
+c.JupyterHub.load_groups = {
+{% if use_nbgrader -%}
+{%- for course in nbgrader_courses -%}
+    '{{course.course_id}}': [
+{%- for grader in course.graders -%}
+        '{{grader}}',
+{%- endfor -%}
+    ],
+{% endfor -%}
+{%- endif %}
+}
+
+# two types of service:
+#   - nbgrader service for each class
+#   - cull_idle_servers run every once in a while to stop user servers
 c.JupyterHub.services = [
 {% if use_nbgrader %}
 {%- for course in nbgrader_courses %}
     {
         'name': '{{course.course_id}}',
-        'url': 'http://{{ ansible_default_ipv4.address }}:{{course.port}}',
+        'url': 'http://127.0.0.1:{{course.port}}',
         'admin': True,
         'cwd': '{{home_dir}}/nbgrader/courses/{{course.course_id}}',
         'command': ['jupyterhub-singleuser', '--group={{course.course_id}}', '--allow-root']
@@ -74,7 +85,18 @@ c.JupyterHub.services = [
     {
         'name': 'cull_idle_servers',
         'admin': True,
-        'command': ['/opt/conda/bin/python3', '{{jupyterhub_srv_dir}}/cull_idle_servers.py', '--cull-every={{cull_every}}', '--timeout={{cull_timeout}}']
+        'command': ['/opt/conda/bin/python3',
+                    '{{jupyterhub_srv_dir}}/cull_idle_servers.py',
+                    '--cull-every={{cull_every}}',
+                    '--timeout={{cull_timeout}}'
+        ]
 	},
 {% endif %}
 ]
+
+
+# spawner options
+c.JupyterHub.spawner_class = 'systemdspawner.SystemdSpawner'
+c.SystemdSpawner.mem_limit = u'{{spawner_mem_limit}}'
+c.SystemdSpawner.cpu_limit = {{spawner_cpu_limit}}
+c.SystemdSpawner.disable_user_sudo = True

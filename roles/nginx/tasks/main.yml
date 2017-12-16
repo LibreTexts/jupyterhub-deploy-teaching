@@ -4,48 +4,6 @@
   apt: pkg=nginx-full
   become: true
 
-# ---------------------------------------------------
-# Install SSL cert/key using letsencrypt
-# ---------------------------------------------------
-
-- fail: msg="you must provide an email for usage with letsencrypt"
-  when: use_letsencrypt and (letsencrypt_email == '' or letsencrypt_email is undefined)
-
-- name: stop the nginx service
-  service: name=nginx state=stopped enabled=yes
-  become: true
-  when: use_letsencrypt
-
-- name: set apt-yes default (needed for certbot)
-  lineinfile:
-    dest: /etc/apt/apt.conf.d/99-apt-yes
-    state: present
-    line: 'APT::Get::Assume-Yes "true";'
-    create: yes
-  become: true
-  when: use_letsencrypt
-
-- name: install certbot (letsencrypt)
-  get_url:
-    url: https://dl.eff.org/certbot-auto
-    dest: /usr/local/bin/certbot-auto
-    mode: 755
-  when: use_letsencrypt
-
-- name: SSL credentials with certbot
-  command: /usr/local/bin/certbot-auto certonly --agree-tos --standalone -m {{ letsencrypt_email }} -d {{ inventory_hostname }} creates={{ letsencrypt_ssl_cert_path }}
-  become: true
-  when: use_letsencrypt
-
-- name: Setup letsencrypt renewal with cron
-  copy: src=letsencrypt-renew dest=/etc/cron.daily/letsencrypt-renew mode=0755
-  become: true
-  when: use_letsencrypt
-
-# ---------------------------------------------------
-# Or, install existing SSL cert/key
-# ---------------------------------------------------
-
 - name: make sure /etc/nginx/ssl exists
   file: path={{ssl_path}}/ state={{item}} owner=root group=root mode=0700
   become: true
@@ -53,25 +11,13 @@
     - directory
     - touch
 
-# TODO: check if the key/cert exists before trying to install
-
 - name: install SSL key
   copy: src='../../../security/ssl.key' dest={{ssl_key_path}} owner=root group=root mode=0600
   become: true
-  when: not use_letsencrypt
 
 - name: install SSL certificate
   copy: src='../../../security/ssl.crt' dest={{ssl_cert_path}} owner=root group=root mode=0600
   become: true
-  when: not use_letsencrypt
-
-# ---------------------------------------------------
-# Configure and launch nginx
-# ---------------------------------------------------
-
-- name: find notebook static directory
-  command: python3 -c 'import notebook; import os; print(os.path.join(notebook.__path__[0], "static"));'
-  register: notebook_static_directory
 
 - name: install nginx.conf
   template: src=nginx.conf.j2 dest=/etc/nginx/nginx.conf owner=root group=root mode=0644 backup=yes

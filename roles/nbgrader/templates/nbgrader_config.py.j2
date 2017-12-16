@@ -3,5 +3,10 @@
 c = get_config()
 
 c.Exchange.course_id = u'{{item.course_id}}'
+c.Exchange.root = u'{{nbgrader_exchange_dir}}'
 c.Exchange.path_includes_course = True
 c.Exchange.timezone = u'{{nbgrader_timezone}}'
+
+c.ClearSolutions.code_stub = {
+    'python': '# your code here',
+}
