@@ -70,7 +70,7 @@ Deployment
    bicycle, see the values in Google Drive).
 
 4. Put SSL cert and key files in ``security/`` and name them ``ssl.crt`` and
-  ``ssl.key`` respectively (for bicycle, see the files in Google Drive).
+   ``ssl.key`` respectively (for bicycle, see the files in Google Drive).
 
 5. Run the following to generate a `cookie secret`_::
 
