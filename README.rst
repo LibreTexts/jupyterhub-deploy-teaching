@@ -64,7 +64,7 @@ Deployment
 2. Run the following and paste the result into the config file under
    ``proxy_auth_token``::
 
-   openssl rand -hex 32
+    openssl rand -hex 32
 
 3. Configure the ``oauth_client_id`` and ``oauth_client_secret`` variables (for
    bicycle, see the values in Google Drive).
@@ -85,8 +85,8 @@ Deployment
    username on the control machine is different), the SSH key file to use, and
    prompts you for your sudo password in order to perform tasks as root::
 
-   ansible-playbook -l bicycle -u <remote-username> --key-file ~/.ssh/<ssh-key>
-   --ask-become-pass deploy.yml
+    ansible-playbook -l bicycle -u <remote-username> \
+        --key-file ~/.ssh/<ssh-key> --ask-become-pass deploy.yml
 
 
 Management
@@ -159,10 +159,10 @@ Not included in this deployment is a backup setup. Here's one way to back up
 user home directories. Set up SSH between the JupyterHub server and the backup
 server, then use a systemd timer unit to periodically ``rsync`` ``/home``.
 
-Write a systemd timer file to specify when to run the unit.
+Write a systemd timer file to specify when to run the unit, such as
+``/etc/systemd/system/rsync-backup.timer``:
 
 .. code-block:: ini
-   :caption: /etc/systemd/system/rsync-backup.timer
 
    [Unit]
    Description=rsync /home to a remote backup server daily
@@ -174,13 +174,12 @@ Write a systemd timer file to specify when to run the unit.
    [Install]
    WantedBy=timers.target
 
-And a corresponding service that specifies the actual command to run (replace
-``<backup-server>`` with the IP of the backup server and
+And write a corresponding service file that specifies the actual command to run
+(replace ``<backup-server>`` with the IP of the backup server and
 ``<remote-backup-path>`` with the location on the backup server you want the
-backups to go to.
+backups to go to. ``/etc/systemd/system/rsync-backup.service``:
 
 .. code-block:: ini
-   :caption: /etc/systemd/system/rsync-backup.service
 
    [Unit]
    Description=rsync /home to a remote backup server
@@ -188,6 +187,11 @@ backups to go to.
    [Service]
    Type=oneshot
    ExecStart=/usr/bin/rsync -a --delete --quiet -e ssh /home <backup-server>:<remote-backup-path>
+
+Start/enable the timer with::
+
+    systemctl enable rsync-backup.timer
+    systemctl start rsync-backup.timer
 
 SSL
 ---
