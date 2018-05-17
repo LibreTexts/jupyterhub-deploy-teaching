@@ -10,7 +10,14 @@
     - ipykernel
     - nbconvert
     - ipywidgets
+    - jupyter_contrib_nbextensions
 
 - name: install python3 kernelspec
   command: python3 -m IPython kernel install
   become: true
+
+
+- name: enabling nbextensions
+  command: jupyter nbextension enable {{ item }} --system --sys-prefix
+  with_items:
+    - exercise2/main
