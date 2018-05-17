@@ -148,6 +148,14 @@ nbgrader config file. Administration of each course is done by navigating to
 the hub's URL with ``/services/<course-id>`` appended. For example:
 ``https://huburl.com/services/course1`` would administer ``course1``.
 
+Once you finish grading an assignment, you can return the feedback document to
+each student using the ``return_feedback.py`` script that's found in each
+course directory. Having a copy in each course directory should help ensure the
+script is only ever run for a specific class, and it needs to be run from the
+course directory::
+
+    python return_feedback.py <assignment_name>
+
 
 Other Considerations
 ====================

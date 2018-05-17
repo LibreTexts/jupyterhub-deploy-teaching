@@ -68,3 +68,9 @@
   become: true
   with_items:
     - "{{nbgrader_courses}}"
+
+- name: install return_feedback.py
+  copy: src=return_feedback.py dest={{home_dir}}/nbgrader/courses/{{item.course_id}} owner=nbgrader group=nbgrader mode=700
+  become: true
+  with_items:
+    - "{{nbgrader_courses}}"
