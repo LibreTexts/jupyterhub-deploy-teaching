@@ -1,0 +1,6 @@
+---
+
+# This playbook installs utility binaries/scripts to /usr/local/bin
+
+- name: installing backup-home utility
+  copy: src=backup-home dest=/usr/local/bin owner=root group=root mode=0755

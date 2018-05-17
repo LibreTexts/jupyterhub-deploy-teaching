@@ -1,0 +1,5 @@
+#!/bin/bash
+# Back up current user's home directory.
+homedir=$(getent passwd "$LOGNAME" | cut -d: -f6)
+backupfile="backup.zip"
+find "$homedir" ! -name "$backupfile" | zip -u "$homedir/$backupfile" -@
