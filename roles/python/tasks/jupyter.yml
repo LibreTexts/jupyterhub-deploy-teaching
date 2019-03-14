@@ -5,6 +5,7 @@
   conda: name={{item}} state=present
   become: true
   with_items:
+    - distutils
     - notebook
     - ipyparallel
     - ipykernel

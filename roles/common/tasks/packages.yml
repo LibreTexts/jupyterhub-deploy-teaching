@@ -29,6 +29,8 @@
     - texlive-full
     - pandoc
     - ffmpeg
+    - python-pip
+    - python3-distutils
 
 - name: install user applications
   apt: pkg={{item}} state=present

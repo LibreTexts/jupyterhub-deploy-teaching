@@ -59,6 +59,7 @@ target/
 customize.yml
 security/
 hosts
+group_vars/jupyterhub_hosts
 
 *.retry
 *.swp
