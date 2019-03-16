@@ -22,6 +22,7 @@ var/
 *.egg-info/
 .installed.cfg
 *.egg
+jupyterhub.sqlite
 
 # PyInstaller
 #  Usually these files are written by a python script from a template
@@ -59,6 +60,7 @@ target/
 customize.yml
 security/
 hosts
+jupyterhub_cookie_secret
 group_vars/jupyterhub_hosts
 
 *.retry
