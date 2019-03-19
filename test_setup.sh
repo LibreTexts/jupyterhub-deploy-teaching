@@ -51,6 +51,8 @@ sed -e '/jupyterhub_users\:/a\' -e "  - $USERNAME" group_vars/jupyterhub_hosts.e
 sudo apt install ansible
 
 # finally run the playbook
-ansible-playbook -l local -u kkrausse --ask-become-pass deploy.yml
+ansible-playbook -l local -u $USERNAME --ask-become-pass deploy.yml
+
+# adds /opt/conda/bin to PATH so the newly installed commands will work
 echo "PATH=/opt/conda/bin:\$PATH" >> ~/.bashrc
 source ~/.bashrc
