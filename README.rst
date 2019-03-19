@@ -41,8 +41,30 @@ Control machine requirements:
 
 - Ansible 2.1+ installed. See `Ansible install docs`_
 
+Initial set-up
+--------------
+First, clone the jupyterhub-deploy-teaching repository to your machine and navigate to the folder.
+
+.. code-block:: 
+
+   git clone https://github.com/LibreTexts/jupyterhub-deploy-teaching
+   cd jupyterhub-deploy-teaching
+   
+There are two options for configuring and deploying JuptyerHub.
+
+Option 1: Automatic configuration and deployment
+------------------------------------------------
+After cloning the repository, you may run `bash test_setup.sh` to configure and deploy Jupyterhub. 
+The script achieves all of the steps outlined in **Manual configuration and deployment**.
+
+While running, the script will ask you to enter your password twice.
+
+After the script finishes executing, run ``jupyterhub`` to start the JupyterHub process.
+
+Option 2: Manual configuration and deployment
+---------------------------------------------
 Configuration
--------------
+~~~~~~~~~~~~~
 
 Configurable options are found in the ``group_vars/jupyterhub_hosts`` file.
 There are comments for each option. These options are picked up by Ansible and
@@ -56,37 +78,68 @@ you'd want to check the following:
 - update the miniconda version and checksum
 
 Deployment
-----------
+~~~~~~~~~~
+1. Add the ansible-conda submodules, if they have not been installed already::
 
-1. Rename the config file ``group_vars/jupyterhub_hosts.example`` to just
-   ``group_vars/jupyterhub_hosts``.
+    git submodule init 
+    git submodule update
 
-2. Run the following and paste the result into the config file under
+2. Rename the config file ``group_vars/jupyterhub_hosts.example`` to just
+   ``group_vars/jupyterhub_hosts``::
+   
+    mv group_vars/jupyterhub_hosts.example group_vars/jupyterhub_hosts
+
+3. Run the following and paste the result into the ``jupyter_hosts`` config file under
    ``proxy_auth_token``::
 
     openssl rand -hex 32
 
-3. Configure the ``oauth_client_id`` and ``oauth_client_secret`` variables (for
+4. Configure the ``oauth_client_id`` and ``oauth_client_secret`` variables (for
    bicycle, see the values in Google Drive).
 
-4. Put SSL cert and key files in ``security/`` and name them ``ssl.crt`` and
+5. Put SSL cert and key files in ``security/`` and name them ``ssl.crt`` and
    ``ssl.key`` respectively (for bicycle, see the files in Google Drive).
-
-5. Run the following to generate a `cookie secret`_::
+    1. To generate a self-signed SSL certificate, generate a private key and certificate 
+       signing request. Follow the instructions on inputting your information::
+   
+        openssl genrsa -out security/ssl.key 1024
+        openssl req -new -key security/ssl.key -out security/ssl.csr
+          
+    2. Then, generate a self-signed certificate::
+    
+        openssl x509 -req -in security/ssl.csr -signkey security/ssl.key \
+            -out security/ssl.crt
+   
+6. Run the following to generate a `cookie secret`_::
 
     openssl rand -hex 32 > security/cookie_secret
+    
+7. Generate an SSH key and add it to the server's list of authorized keys::
 
-6. Edit the ``hosts`` file to give the correct IP address and SSH port for the
+    ssh-keygen
+    cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+
+8. Rename ``hosts.example`` to ``hosts``::
+    
+    mv hosts.example hosts
+   
+   Edit the ``hosts`` file to give the correct IP address and SSH port for the
    server. There are currently two entries: one for testing with Vagrant
    (testing) and one for deploying to a remote server (bicycle).
+   
+   To add a server, replace the last line with::
+   
+    <server_name> ansible_ssh_host=127.0.0.1 ansible_ssh_port=22 ansible_ssh_user=<username>
+   
+   where ``<server_name>`` and ``<username>`` should be replaced with the name of the server 
+   and username respectively.
 
-7. Now you can run the playbook to provision the server. This specifies which
+9. Now you can run the playbook to provision the server. This specifies which
    of the two hosts to deploy to, your username on the host (in case your
    username on the control machine is different), the SSH key file to use, and
    prompts you for your sudo password in order to perform tasks as root::
-
-    ansible-playbook -l bicycle -u <remote-username> \
-        --key-file ~/.ssh/<ssh-key> --ask-become-pass deploy.yml
+   
+    ansible-playbook -l <server_name> -u <username> --ask-become-pass deploy.yml
 
 
 Management
