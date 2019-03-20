@@ -79,47 +79,47 @@ you'd want to check the following:
 
 Deployment
 ~~~~~~~~~~
-1. Add the ansible-conda submodules, if they have not been installed already::
+#. Add the ansible-conda submodules, if they have not been installed already::
 
     git submodule init 
     git submodule update
 
-2. Rename the config file ``group_vars/jupyterhub_hosts.example`` to just
+#. Rename the config file ``group_vars/jupyterhub_hosts.example`` to just
    ``group_vars/jupyterhub_hosts``::
    
     mv group_vars/jupyterhub_hosts.example group_vars/jupyterhub_hosts
 
-3. Run the following and paste the result into the ``jupyter_hosts`` config file under
+#. Run the following and paste the result into the ``jupyter_hosts`` config file under
    ``proxy_auth_token``::
 
     openssl rand -hex 32
 
-4. Configure the ``oauth_client_id`` and ``oauth_client_secret`` variables (for
+#. Configure the ``oauth_client_id`` and ``oauth_client_secret`` variables (for
    bicycle, see the values in Google Drive).
 
-5. Put SSL cert and key files in ``security/`` and name them ``ssl.crt`` and
+#. Put SSL cert and key files in ``security/`` and name them ``ssl.crt`` and
    ``ssl.key`` respectively (for bicycle, see the files in Google Drive).
-    1. To generate a self-signed SSL certificate, generate a private key and certificate 
+    #. To generate a self-signed SSL certificate, generate a private key and certificate 
        signing request. Follow the instructions on inputting your information::
-   
+        
         openssl genrsa -out security/ssl.key 1024
         openssl req -new -key security/ssl.key -out security/ssl.csr
-          
-    2. Then, generate a self-signed certificate::
-    
+        
+    #. Then, generate a self-signed certificate::
+         
         openssl x509 -req -in security/ssl.csr -signkey security/ssl.key \
             -out security/ssl.crt
-   
-6. Run the following to generate a `cookie secret`_::
+         
+#. Run the following to generate a `cookie secret`_::
 
     openssl rand -hex 32 > security/cookie_secret
     
-7. Generate an SSH key and add it to the server's list of authorized keys::
+#. Generate an SSH key and add it to the server's list of authorized keys::
 
     ssh-keygen
     cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 
-8. Rename ``hosts.example`` to ``hosts``::
+#. Rename ``hosts.example`` to ``hosts``::
     
     mv hosts.example hosts
    
@@ -134,7 +134,7 @@ Deployment
    where ``<server_name>`` and ``<username>`` should be replaced with the name of the server 
    and username respectively.
 
-9. Now you can run the playbook to provision the server. This specifies which
+#. Now you can run the playbook to provision the server. This specifies which
    of the two hosts to deploy to, your username on the host (in case your
    username on the control machine is different), the SSH key file to use, and
    prompts you for your sudo password in order to perform tasks as root::
