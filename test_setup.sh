@@ -48,7 +48,7 @@ sed -e '/jupyterhub_users\:/a\' -e "  - $USERNAME" group_vars/jupyterhub_hosts.e
         > group_vars/jupyterhub_hosts
 
 # install ansible
-sudo apt install ansible
+sudo apt install -y ansible
 
 # install ssh
 sudo apt install -y ssh
