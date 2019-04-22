@@ -6,7 +6,7 @@
 USERNAME=$USER
 
 # get ansible-conda down if it is not already
-git submodule init 
+git submodule init
 git submodule update
 
 # ssl stuff for nginx
@@ -48,7 +48,10 @@ sed -e '/jupyterhub_users\:/a\' -e "  - $USERNAME" group_vars/jupyterhub_hosts.e
         > group_vars/jupyterhub_hosts
 
 # install ansible
-sudo apt install ansible
+sudo apt install -y ansible
+
+# install ssh
+sudo apt install -y ssh
 
 # finally run the playbook
 ansible-playbook -l local -u $USERNAME --ask-become-pass deploy.yml
