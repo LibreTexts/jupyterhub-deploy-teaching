@@ -54,7 +54,7 @@ There are two options for configuring and deploying JuptyerHub.
 
 Option 1: Automatic configuration and deployment
 ------------------------------------------------
-After cloning the repository, you may run `bash test_setup.sh` to configure and deploy Jupyterhub. 
+After cloning the repository, you may run `bash setup.sh` to configure and deploy Jupyterhub. 
 The script achieves all of the steps outlined in **Manual configuration and deployment**.
 
 While running, the script will ask you to enter your password twice.
