@@ -1,7 +1,8 @@
 #!/bin/bash
 
-# this one is to get everything set up without a hitch so you can run your
-# ansible command
+# This script configures and deploys JupyterHub automatically
+# To use, run the command "bash setup.sh" in the jupyterhub-deploy-teaching folder.
+# Prerequisites: Ansible 2.1+ should be installed.
 
 USERNAME=$USER
 
