@@ -84,7 +84,7 @@ Deployment
     git submodule init 
     git submodule update
 
-#. Rename the config file ``group_vars/jupyterhub_hosts.example`` to just
+#. Rename the config file ``group_vars/jupyterhub_hosts.example`` to
    ``group_vars/jupyterhub_hosts``::
    
     mv group_vars/jupyterhub_hosts.example group_vars/jupyterhub_hosts
