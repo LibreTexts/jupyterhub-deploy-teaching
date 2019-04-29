@@ -47,7 +47,7 @@ First, clone the jupyterhub-deploy-teaching repository to your machine and navig
 
 .. code-block:: 
 
-   git clone https://github.com/LibreTexts/jupyterhub-deploy-teaching
+   git clone https://github.com/mechmotum/jupyterhub-deploy-teaching
    cd jupyterhub-deploy-teaching
    
 There are two options for configuring and deploying JuptyerHub.
