@@ -57,7 +57,7 @@ Option 1: Automatic configuration and deployment
 After cloning the repository, you may run `bash setup.sh` to configure and deploy Jupyterhub. 
 The script achieves all of the steps outlined in **Manual configuration and deployment**.
 
-While running, the script will ask you to enter your password twice.
+While running, the script will ask you to enter your password twice for sudo rights.
 
 After the script finishes executing, run ``jupyterhub`` to start the JupyterHub process.
 
