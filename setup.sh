@@ -28,10 +28,10 @@ EOF
 openssl x509 -req -in security/ssl.csr -signkey security/ssl.key \
 	-out security/ssl.crt
 
-# cookie secret
+# Generates a cookie secret and saves it to a file under the security directory
 openssl rand -hex 32 > security/cookie_secret
 
-# generate ssh keys
+# Generate ssh keys
 ssh-keygen >> /dev/null 2>&1 << EOF
 
 
@@ -39,12 +39,14 @@ ssh-keygen >> /dev/null 2>&1 << EOF
 EOF
 cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 
-# create hosts files
+# Create hosts files
+# This specifies the IP address and SSH port of the server. The server name is set to local
+# the username is set to the current user.
 HOSTS_LINE="local ansible_ssh_host=127.0.0.1 ansible_ssh_port=22 ansible_ssh_user='$USERNAME'"
 cp hosts.example hosts
 echo $HOSTS_LINE >> hosts
 
-# this one creates the host file but with the username added to the admin and regular users
+# Adds the current user as an admin and regular user in the jupyter_hosts file
 sed -e '/jupyterhub_users\:/a\' -e "  - $USERNAME" group_vars/jupyterhub_hosts.example\
         | sed -e '/jupyterhub_admin_users\:/a\' -e "  - $USERNAME"\
         > group_vars/jupyterhub_hosts
