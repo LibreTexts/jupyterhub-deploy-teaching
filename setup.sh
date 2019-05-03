@@ -7,11 +7,12 @@
 # Sets the variable USERNAME to the current user
 USERNAME=$USER
 
-# get ansible-conda down if it is not already
+# this pulls the ansible-conda submodule down at the commit specified in
+# the repo
 git submodule init
 git submodule update
 
-# ssl stuff for nginx
+# generate ssl keys for nginx
 openssl genrsa -out security/ssl.key 1024 > /dev/null 2>&1
 openssl req -new -key security/ssl.key -out security/ssl.csr > /dev/null 2>&1 \
 << EOF
@@ -31,7 +32,8 @@ openssl x509 -req -in security/ssl.csr -signkey security/ssl.key \
 # cookie secret
 openssl rand -hex 32 > security/cookie_secret
 
-# generate ssh keys
+# generates ssh keys create the private key at ~/.ssh/id_rsa and
+# public key at ~/.ssh/id_rsa.pub
 ssh-keygen >> /dev/null 2>&1 << EOF
 
 

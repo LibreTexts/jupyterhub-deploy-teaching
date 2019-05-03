@@ -9,10 +9,6 @@ c.JupyterHub.port = 8000
 c.JupyterHub.config_file = u'{{ jupyterhub_config_dir }}/jupyterhub_config.py'
 c.JupyterHub.cookie_secret_file = u'{{ jupyterhub_srv_dir }}/cookie_secret'
 c.JupyterHub.db_url = u'{{ jupyterhub_srv_dir }}/jupyterhub.sqlite'
-# I dont know why, but this messes it up. Says its depricated
-# it seems like it automatically picks an auth token now and chooses a
-# different one each time
-#
 c.JupyterHub.confirm_no_ssl = True
 
 
