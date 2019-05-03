@@ -4,6 +4,7 @@
 # To use, run the command "bash setup.sh" in the jupyterhub-deploy-teaching folder.
 # Prerequisites: Ansible 2.1+ should be installed.
 
+# Sets the variable USERNAME to the current user
 USERNAME=$USER
 
 # get ansible-conda down if it is not already
