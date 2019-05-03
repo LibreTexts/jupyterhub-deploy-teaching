@@ -47,8 +47,8 @@ First, clone the jupyterhub-deploy-teaching repository to your machine and navig
 
 .. code-block:: 
 
-   git clone https://github.com/mechmotum/jupyterhub-deploy-teaching
-   cd jupyterhub-deploy-teaching
+    git clone https://github.com/mechmotum/jupyterhub-deploy-teaching
+    cd jupyterhub-deploy-teaching
    
 There are two options for configuring and deploying JuptyerHub.
 
@@ -92,7 +92,7 @@ Deployment
 #. Run the following and paste the result into the ``jupyter_hosts`` config file under
    ``proxy_auth_token``::
 
-    openssl rand -hex 32
+       openssl rand -hex 32
 
 #. Configure the ``oauth_client_id`` and ``oauth_client_secret`` variables (for
    bicycle, see the values in Google Drive).
@@ -102,26 +102,26 @@ Deployment
     #. To generate a self-signed SSL certificate, generate a private key and certificate 
        signing request. Follow the instructions on inputting your information::
         
-        openssl genrsa -out security/ssl.key 1024
-        openssl req -new -key security/ssl.key -out security/ssl.csr
+           openssl genrsa -out security/ssl.key 1024
+           openssl req -new -key security/ssl.key -out security/ssl.csr
         
     #. Then, generate a self-signed certificate::
          
-        openssl x509 -req -in security/ssl.csr -signkey security/ssl.key \
+           openssl x509 -req -in security/ssl.csr -signkey security/ssl.key \
             -out security/ssl.crt
          
 #. Run the following to generate a `cookie secret`_::
 
-    openssl rand -hex 32 > security/cookie_secret
+       openssl rand -hex 32 > security/cookie_secret
     
 #. Generate an SSH key and add it to the server's list of authorized keys::
 
-    ssh-keygen
-    cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
+       ssh-keygen
+       cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys
 
 #. Rename ``hosts.example`` to ``hosts``::
     
-    mv hosts.example hosts
+       mv hosts.example hosts
    
    Edit the ``hosts`` file to give the correct IP address and SSH port for the
    server. There are currently two entries: one for testing with Vagrant
@@ -129,7 +129,7 @@ Deployment
    
    To add a server, replace the last line with::
    
-    <server_name> ansible_ssh_host=127.0.0.1 ansible_ssh_port=22 ansible_ssh_user=<username>
+       <server_name> ansible_ssh_host=127.0.0.1 ansible_ssh_port=22 ansible_ssh_user=<username>
    
    where ``<server_name>`` and ``<username>`` should be replaced with the name of the server 
    and username respectively.
@@ -139,7 +139,7 @@ Deployment
    username on the control machine is different), the SSH key file to use, and
    prompts you for your sudo password in order to perform tasks as root::
    
-    ansible-playbook -l <server_name> -u <username> --ask-become-pass deploy.yml
+       ansible-playbook -l <server_name> -u <username> --ask-become-pass deploy.yml
 
 
 Management
