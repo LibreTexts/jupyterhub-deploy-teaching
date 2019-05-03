@@ -87,7 +87,7 @@ Deployment
 #. Rename the config file ``group_vars/jupyterhub_hosts.example`` to
    ``group_vars/jupyterhub_hosts``::
    
-    mv group_vars/jupyterhub_hosts.example group_vars/jupyterhub_hosts
+       mv group_vars/jupyterhub_hosts.example group_vars/jupyterhub_hosts
 
 #. Run the following and paste the result into the ``jupyter_hosts`` config file under
    ``proxy_auth_token``::
